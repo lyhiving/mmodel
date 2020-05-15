@@ -1,16 +1,27 @@
 <?php
 include __DIR__ . '/../autoload.php';
-
+include __DIR__ . '/../vendor/autoload.php';
+use lyhiving\mmodel\Mcache;
 use lyhiving\mmodel\Mmodel;
+use Phpfastcache\CacheManager;
+use Phpfastcache\Config\ConfigurationOption;
+use Phpfastcache\Drivers\Redis\Config;
 
-
-function cache_load($key, $force=true){
-    return false;
+if (0) {
+    CacheManager::setDefaultConfig(new ConfigurationOption([
+        'path' => __DIR__ . '/.cachemeta',
+    ]));
+    $InstanceCache = CacheManager::getInstance('files');
+} else {
+    $InstanceCache = CacheManager::getInstance('redis', new Config([
+        'host' => '127.0.0.1', //Redis server
+        'port' => 6379, //Redis port
+        'password' => 'root', //Redis password
+        'database' => 0, //Redis db
+    ]));
 }
 
-function cache_write($key, $value){
-    return true;
-}
+$cache = new Mcache($InstanceCache);
 
 $options = [
     // 'driver' => 'mysql',
@@ -21,12 +32,12 @@ $options = [
     'dbname' => 'test',
     'prefix' => 'cloud_',
     // 'pconnect' => 1,
-    'charset' => 'utf8mb4'
+    'charset' => 'utf8mb4',
 ];
 
-
 $model = new Mmodel($options);
-$model->quick('ewei_shop_cms');
-$data = $model->select(array('contentid'=>1));
+$model->set_cache($cache);
+$model->quick('cms');
+$data = $model->select(array('contentid' => 1));
 
-var_dump($model->select(array('contentid'=>1)));
+var_dump($model->select(array('contentid' => 1)));

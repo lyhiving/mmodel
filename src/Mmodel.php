@@ -15,6 +15,13 @@ namespace lyhiving\mmodel;
     protected $db;
 
     /**
+     * 缓存实例
+     *
+     * @instance cache
+     */
+    protected $cache;
+
+    /**
      * 数据库名称
      *
      * @var string
@@ -177,6 +184,14 @@ namespace lyhiving\mmodel;
             'charset' => $config['charset'],
         );
         $this->db = Mdb::get_instance($options, $slaves);
+        return $this;
+    }
+
+
+    public function set_cache($cache)
+    {
+        $this->cache = $cache;
+        $this->db->set_cache($cache);
         return $this;
     }
 
