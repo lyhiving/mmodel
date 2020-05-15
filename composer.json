@@ -16,7 +16,7 @@
     "ext-gd": "*"
   },
   "autoload": {
-    "psr-4": { "lyhiving\\mm0del\\": "src/" }
+    "psr-4": { "lyhiving\\mmodel\\": "src/" }
   },
   "minimum-stability": "dev"
 }

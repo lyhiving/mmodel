@@ -27,4 +27,6 @@ $options = [
 
 $model = new Mmodel($options);
 $model->quick('ewei_shop_cms');
+$data = $model->select(array('contentid'=>1));
+
 var_dump($model->select(array('contentid'=>1)));
