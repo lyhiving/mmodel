@@ -14,7 +14,8 @@
   "require": {
     "php": ">=7.0",
     "ext-gd": "*",
-    "phpfastcache/phpfastcache": "7.1.1"
+    "phpfastcache/phpfastcache": "7.1.1",
+    "hprose/hprose": "2.0.40"
   },
   "autoload": {
     "psr-4": { "lyhiving\\mmodel\\": "src/" }

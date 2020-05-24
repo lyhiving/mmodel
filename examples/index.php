@@ -3,25 +3,17 @@ include __DIR__ . '/../autoload.php';
 include __DIR__ . '/../vendor/autoload.php';
 use lyhiving\mmodel\Mcache;
 use lyhiving\mmodel\Mmodel;
-use Phpfastcache\CacheManager;
-use Phpfastcache\Config\ConfigurationOption;
-use Phpfastcache\Drivers\Redis\Config;
 
-if (0) {
-    CacheManager::setDefaultConfig(new ConfigurationOption([
-        'path' => __DIR__ . '/.cachemeta',
-    ]));
-    $InstanceCache = CacheManager::getInstance('files');
-} else {
-    $InstanceCache = CacheManager::getInstance('redis', new Config([
-        'host' => '127.0.0.1', //Redis server
-        'port' => 6379, //Redis port
-        'password' => 'root', //Redis password
-        'database' => 0, //Redis db
-    ]));
-}
+//use files cache 
+// $cache = new Mcache('files', ['path' => __DIR__ . '/.cachemeta']);
 
-$cache = new Mcache($InstanceCache);
+//use redis cache
+$cache = new Mcache('redis', [
+    'host' => 'localhost', //Redis server
+    'port' => 6379, //Redis port
+    'password' => 'root', //Redis password
+    'database' => 0 //Redis db
+]);
 
 $options = [
     // 'driver' => 'mysql',
@@ -39,5 +31,5 @@ $model = new Mmodel($options);
 $model->set_cache($cache);
 $model->quick('cms');
 $data = $model->select(array('contentid' => 1));
-
+var_dump($data);
 var_dump($model->select(array('contentid' => 1)));

@@ -7,6 +7,11 @@ class Mdb
     public $options = array(), $master = array(), $slaves = array(), $slave = array(), $slave_key, $sql, $cache;
     private $dbh, $dbh_master, $dbh_slave, $error, $errno;
 
+    public function hello($db)
+    {
+        return 'Hi, '.$db;
+    }
+
     public function __construct($master = array(), $slaves = array())
     {
         $this->master = $master;
@@ -31,10 +36,10 @@ class Mdb
     public static function &get_instance($master = array(), $slaves = array())
     {
         static $instance;
-        $key = implode('', $master);
+        $params = $master;
+        $key = md5(implode('', $params));
         if (!isset($instance[$key])) {
             $instance[$key] = new Mdb($master, $slaves);
-
         }
         return $instance[$key];
     }
@@ -287,8 +292,10 @@ class Mdb
 
     public function get_primary($table)
     {
-		$table = $this->sql_prefix($table);
-		$db_primary = $this->cache ? $this->cache->get('ext:db_primary') : false;
+
+        return $table;
+        $table = $this->sql_prefix($table);
+		// $db_primary = $this->cache ? $this->cache->get('mdb_primary') : false;
 		if (!$db_primary || !$db_primary[$table]) {
 			$primary = array();
             $result = $this->query("SHOW COLUMNS FROM `$table`");
@@ -301,7 +308,7 @@ class Mdb
                 }
             }
             $db_primary[$table]  = count($primary) == 1 ? $primary[0] : (empty($primary) ? null : $primary);
-			if($this->cache) $this->cache->set('ext:db_primary', $db_primary);
+			// if($this->cache) $this->cache->set('mdb_primary', $db_primary);
 		}
 		return $db_primary[$table];
     }
@@ -310,7 +317,7 @@ class Mdb
     public function get_fields($table)
     {
 		$table = $this->sql_prefix($table);
-        $db_fileds = $this->cache ? $this->cache->get('ext:db_fileds'): false;
+        $db_fileds = $this->cache ? $this->cache->get('mdb_fileds'): false;
 		if (!$db_fileds || !$db_fileds[$table]) {
 			$fileds = array();
             $result = $this->query("SHOW COLUMNS FROM `$table`");
@@ -321,7 +328,7 @@ class Mdb
                 }
             }
 			$db_fileds[$table]  = $fileds;
-			if($this->cache) $this->cache->set('ext:db_fileds', $db_fileds);  
+			if($this->cache) $this->cache->set('mdb_fileds', $db_fileds);  
 		}
 		return $db_fileds[$table];
     }

@@ -2,7 +2,7 @@
 namespace lyhiving\mmodel;
 
 #use lyhiving\mmodel\Mobject;
- class Mmodel extends Mobject
+class Mmodel extends Mobject
 {
     const FETCH_ASSOC = \PDO::FETCH_ASSOC;
     const FETCH_OBJ = \PDO::FETCH_OBJ;
@@ -12,14 +12,21 @@ namespace lyhiving\mmodel;
      *
      * @var db
      */
-    protected $db;
+    public $db;
 
     /**
      * 缓存实例
      *
      * @instance cache
      */
-    protected $cache;
+    public $cache;
+
+    /**
+     * 驱动类型
+     *
+     * @var string
+     */
+    protected $_driver;
 
     /**
      * 数据库名称
@@ -99,6 +106,13 @@ namespace lyhiving\mmodel;
     protected $_options = array();
 
     /**
+     * 数据库参数
+     *
+     * @var array
+     */
+    protected $_db_options = array();
+
+    /**
      * 数据获取方式
      *
      * @var int
@@ -165,45 +179,50 @@ namespace lyhiving\mmodel;
      */
     public function __construct($options = array())
     {
-        if($options){
+        if ($options) {
             $this->initdb($options);
         }
+        if ($options['driver'] == 'rpc') {
+            $client = new \Hprose\Http\Client($options['url']);
+            return $client;
+        }
     }
+
 
     public function initdb($config = array())
     {
         $options = array(
-            'driver' => 'mysql',
+            'driver' => $config['driver'] ?? 'mysql',
             'host' => $config['host'],
-            'port' => $config['port']??3306,
+            'port' => $config['port'] ?? 3306,
             'username' => $config['username'],
             'password' => $config['password'],
             'dbname' => $config['dbname'],
             'prefix' => $config['prefix'],
             'pconnect' => $config['pconnect'] ?? 1,
             'charset' => $config['charset'],
+            'url' => $config['url'] ?? '',
         );
-        $this->db = Mdb::get_instance($options, $slaves);
+        $this->_driver = $options['driver'];
+        $this->_db_options = $options;
+        switch ($this->_driver) {
+            case "rpc":
+                $this->db = new \Hprose\Http\Client($options['url'], false);
+                break;
+            default:
+                $this->db = Mdb::get_instance($options, $slaves);
+                break;
+        }
         return $this;
     }
-
 
     public function set_cache($cache)
     {
         $this->cache = $cache;
-        $this->db->set_cache($cache);
-        return $this;
-    }
-
-    public function quck($db, $options=array())
-    {
-        if($options){
-            $this->initdb($options);
+        if ($this->_driver != 'rpc') {
+            $this->db->set_cache($cache);
         }
-        $this->_table = $this->db->options['prefix'] .$db;
-        $this->_primary = $this->db->get_primary($this->_table);
-        $this->_fields = $this->db->get_fields($this->_table);
-        $this->_readonly = array($this->_primary);
+
         return $this;
     }
 
@@ -365,7 +384,7 @@ namespace lyhiving\mmodel;
      */
     public function quick($db)
     {
-        $this->_table = $this->db->options['prefix'] . $db;
+        $this->_table = $this->_db_options['prefix'] . $db;
         $this->_primary = $this->db->get_primary($this->_table);
         $this->_fields = $this->db->get_fields($this->_table);
         $this->_readonly = array($this->_primary);

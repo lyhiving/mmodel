@@ -1,18 +1,30 @@
 <?php
 namespace lyhiving\mmodel;
 
+use Phpfastcache\CacheManager;
+use Phpfastcache\Config\ConfigurationOption;
+use Phpfastcache\Drivers\Redis\Config;
+
 class Mcache
 {
 
-    public $cache;
+    public static $cache;
     public $key;
 
-    public function __construct($cache = '')
+    public function __construct($cache = '', $config = [])
     {
-        if ($cache) {
-            $this->cache = $cache;
+        if (!is_object($cache)) {
+            switch ($cache) {
+                case "files":
+                    CacheManager::setDefaultConfig(new ConfigurationOption($config));
+                    $cache = CacheManager::getInstance('files');
+                    break;
+                case "redis":
+                    $cache = CacheManager::getInstance('redis', new Config($config));
+                    break;
+            }
         }
-
+        $this->cache = $cache;
     }
 
     public function init($cache)
@@ -21,13 +33,17 @@ class Mcache
         return $this;
     }
 
-    public function ketfix(){
-        $this->key = str_replace(':',"_",$this->key);
+    public function ketfix()
+    {
+        $this->key = str_replace(':', "_", $this->key);
     }
 
     public function get($key)
     {
-        if(!$this->cache) return false;
+        if (!$this->cache) {
+            return false;
+        }
+
         $this->key = $key;
         $this->ketfix();
         $CachedString = $this->cache->getItem($this->key);
@@ -36,9 +52,12 @@ class Mcache
 
     public function set($key, $data, $time = 0)
     {
-        if(!$this->cache) return false;
+        if (!$this->cache) {
+            return false;
+        }
+
         $this->key = $key;
-        $this->ketfix(); 
+        $this->ketfix();
         $CachedString = $this->cache->getItem($this->key);
         $CachedString->set($data);
         if ($time) {
@@ -49,7 +68,10 @@ class Mcache
 
     public function delete($key)
     {
-        if(!$this->cache) return false;
+        if (!$this->cache) {
+            return false;
+        }
+
         $this->key = $key;
         $this->ketfix();
         return $this->cache->deleteItem($this->key);
