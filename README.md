@@ -78,9 +78,10 @@ var_dump($data);
 <?php
 //引入autoload.php 
 
-use Hprose\Http\Server;
 use lyhiving\mmodel\Mcache;
-use lyhiving\mmodel\Mdb;
+use lyhiving\mmodel\Mmodel;
+use Hprose\Http\Server;
+
 //缓存
 $cache = new Mcache('redis', [
     'host' => 'localhost',
@@ -102,11 +103,12 @@ $options = [
     'charset' => 'utf8mb4',
 ];
 
+$model = new Mmodel($options);
+$model->set_cache($cache); 
+
 $server = new Server();
-$db = Mdb::get_instance($options);
-$db->set_cache($cache);
-$server->addInstanceMethods($db);
-$server->setCrossDomainEnabled(); //支持跨域
+$server->addInstanceMethods($model->db);
+$server->setCrossDomainEnabled();
 $server->start();
 ```
 
