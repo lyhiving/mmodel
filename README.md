@@ -140,7 +140,9 @@ TODO: 看情况加入渐变验证组件。
 
 ## 关于缓存
 
-缓存实际上使用了 [phpfastcache](https://github.com/PHPSocialNetwork/phpfastcache)， 一个很不错的缓存包。但实际上如果非常轻便的开发，甚至连缓存都可以不用。
+缓存实际上使用了 [phpfastcache](https://github.com/PHPSocialNetwork/phpfastcache)， 一个很不错的缓存包。但没用使用它的最新版本，原因是最新版本要求PHP7.4，这个对于部分程序还是不是非常友好。
+
+实际上如果非常轻便的开发，甚至连缓存都可以不用。
 
 使用缓存的时候注意，如果更新了表结构需要清除缓存。如果不清，默认15分钟后缓存失效。
  
