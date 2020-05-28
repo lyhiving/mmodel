@@ -60,6 +60,22 @@ abstract class Mobject
     }
 
     /**
+     * 仅执行第一次匹配替换
+     * @param string $search 查找的字符串
+     * @param string $replace 执行替换的字符串
+     * @param string $subject 原字符串
+     * @return string
+     */
+    public function str_replace_once($search, $replace, $subject)
+    {
+        $pos = strpos($subject, $search);
+        if ($pos === false) {
+            return $subject;
+        }
+        return substr_replace($subject, $replace, $pos, strlen($search));
+    }
+
+    /**
      * @param array $data 原始数组
      * @param array $keys 过滤key
      * @param bool $ismulti 是否是多维数组
@@ -109,7 +125,7 @@ abstract class Mobject
 
                         } else {
                             if ($ks[1] == '@thumb') {
-                                $result[$ks[0]] = function_exists('mmodel_thumb') ? mmodel_thumb($data[$ks[0]]) :$data[$ks[0]];
+                                $result[$ks[0]] = function_exists('mmodel_thumb') ? mmodel_thumb($data[$ks[0]]) : $data[$ks[0]];
                             } else {
                                 $result[$ks[1]] = $data[$ks[0]];
                             }
@@ -121,10 +137,15 @@ abstract class Mobject
             }
         } else {
             if (is_string($keys)) {
-                $_key = $keys[0] == '@' ? str_replace_once('@', '', $keys) : '';
+                $_key = $keys[0] == '@' ? $this->str_replace_once('@', '', $keys) : ''; //@key, @key:valuekey
                 foreach ($data as $k => $v) {
                     if ($_key) {
-                        $result[$v[$_key]] = $v;
+                        if(strpos($_key,':')){
+                            $_keys = explode(":", $_key);
+                            $result[$v[$_keys[0]]] = $v[$_keys[1]];
+                        }else{
+                            $result[$v[$_key]] = $v;
+                        }
                     } else {
                         $result[] = $v[$keys];
                     }
