@@ -134,6 +134,30 @@ $data = $model->select(array('contentid' => 1));
 var_dump($data);
 ```
 
+简单模板viewer的使用：
+```php
+<?php
+//引入autoload.php 
+
+use lyhiving\mmodel\Mmodel;
+
+//初始化指定路径
+$template = Mmodel::template(['dir' => __DIR__ . '/templates/']);
+
+//赋值方法一
+$template->assign('time', time());
+
+//赋值方法二
+$template->assign(['time2'=>microtime(true)]);
+
+$template->assign('data',[['id'=>1,'name'=>'name1'],['id'=>2,'name'=>'name2']]);
+
+//选择模板
+$template->display('demo');
+```
+
+
+
 ## 关于远程调用的加密
 
 目前先这样用，远程的地址复杂点就是了。

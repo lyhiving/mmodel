@@ -2,3 +2,4 @@
 vendor
 examples/.cachemeta
 composer.lock
+examples/templates_compile

@@ -7,12 +7,28 @@ class Mmodel extends Mobject
     const FETCH_ASSOC = \PDO::FETCH_ASSOC;
     const FETCH_OBJ = \PDO::FETCH_OBJ;
 
+    private static $objects;
+
     /**
      * 数据库连接
      *
      * @var db
      */
     public $db;
+
+    /**
+     * 视图用法
+     *
+     * @var view
+     */
+    public $view;
+
+    /**
+     * 模板用法
+     *
+     * @var template
+     */
+    public $template;
 
     /**
      * 缓存实例
@@ -187,7 +203,6 @@ class Mmodel extends Mobject
             return $client;
         }
     }
-
 
     public function initdb($config = array())
     {
@@ -1049,4 +1064,49 @@ class Mmodel extends Mobject
             return $error;
         }
     }
+
+    /**
+     * tempate 工厂
+     *
+     * @param string $app
+     * @return template
+     */
+    public static function &template($ext = array(), $app = null)
+    {
+        if (!isset(self::$objects['template'])) {
+            $config = [
+                'ext' => '.html',
+                'name' => 'default',
+                'tags' => 'db|xml|json|rpc',
+                'compile_check' => true,
+                'compile_force' => 0,
+            ];
+            if ($ext) {
+                $config = array_merge($config, $ext);
+            }
+
+            if ($app) {
+                $config['app'] = $app;
+            }
+            $config['dir'] = $config['dir'] ? $config['dir'] : __DIR__ . 'templates/';
+            $config['compile_dir'] = $config['compile_dir'] ? $config['compile_dir'] : $config['dir'] . '#compile#/';
+            self::$objects['template'] = new Mtemplate($config);
+        }
+        return self::$objects['template'];
+    }
+
+    /**
+     * view 工厂
+     *
+     * @param string $app
+     * @return view
+     */
+    public static function &view($dir = 'cloud')
+    {
+        if (!isset(self::$objects['view'])) {
+            self::$objects['view'] = new Mview(array('dir' => $dir));
+        }
+        return self::$objects['view'];
+    }
+
 }
