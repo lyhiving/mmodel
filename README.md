@@ -166,7 +166,7 @@ TODO: 看情况加入渐变验证组件。
 
 ## 关于缓存
 
-缓存实际上使用了 [phpfastcache](https://github.com/PHPSocialNetwork/phpfastcache)， 一个很不错的缓存包。但没用使用它的最新版本，原因是最新版本要求PHP7.4，这个对于部分程序还是不是非常友好。
+缓存实际上使用了 [phpfastcache](https://github.com/PHPSocialNetwork/phpfastcache)， 一个很不错的缓存包。由于安全相关的问题，目前使用到V8.1.0版本，该版本要求PHP>=7.3， 希望可以兼容多点的PHP版本。
 
 实际上如果非常轻便的开发，甚至连缓存都可以不用。
 

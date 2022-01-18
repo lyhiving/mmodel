@@ -14,7 +14,7 @@
   "require": {
     "php": ">=7.0",
     "ext-gd": "*",
-    "phpfastcache/phpfastcache": "9.0.0",
+    "phpfastcache/phpfastcache": "8.1.0",
     "hprose/hprose": "2.0.40"
   },
   "autoload": {
