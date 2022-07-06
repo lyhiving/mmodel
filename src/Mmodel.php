@@ -220,6 +220,8 @@ class Mmodel extends Mobject
         );
         $this->_driver = $options['driver'];
         $this->_db_options = $options;
+        $slaves = [];
+        if(isset($options['slaves'])  && $options['slaves']) $slaves = $options['slaves'];
         switch ($this->_driver) {
             case "rpc":
                 $this->db = new \Hprose\Http\Client($options['url'], false);
